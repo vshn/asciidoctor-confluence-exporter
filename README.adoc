@@ -1,0 +1,31 @@
+= Confluence to AsciiDoc Exporter
+
+This project contains a Python program that connects to a https://www.atlassian.com/software/confluence[Confluence] wiki and reads a series of page (referenced by their IDs), saving the output as AsciiDoc files.
+
+It requires:
+
+* Python 3
+* https://pandoc.org/[Pandoc]
+
+== Security
+
+This tool requires the username and password of a valid user to access the Confluence wiki. The values are passed to the tool as environment variables:
+
+* `CONFLUENCE_USERNAME`
+* `CONFLUENCE_PASSWORD`
+
+== Docker Image
+
+The `Dockerfile` bundled is used to create the `vshn/asciidoctor-confluence-exporter` image, which can be used as follows:
+
+`docker run --rm --env-file credentials --user "$(id -u)" --volume "${PWD}":/data vshn/asciidoctor-confluence-exporter:1.0 --wiki=https://wiki.url --output=output 123 45 6789 --verbose`
+
+In the command above, "123", "45" and "6789" are valid page IDs in the Confluence wiki located in "wiki.url". The `--help` parameter provides more information about the use of the tool.
+
+Also, in the example above, Docker passes the environment variables through a file simply named `credentials`, which might look like this:
+
+[source]
+----
+CONFLUENCE_USERNAME=your.username
+CONFLUENCE_PASSWORD=y0uR.p@ssw0Rd
+----
