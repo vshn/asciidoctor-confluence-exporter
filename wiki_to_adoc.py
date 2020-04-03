@@ -10,6 +10,7 @@ import argparse
 import subprocess
 import os
 import logging
+import sys
 
 # Used to build the URL to connect to, stripping extra slashes if needed
 def slash_join(*args):
@@ -61,24 +62,31 @@ base_url = slash_join(args.wiki, "rest", "api", "content")
 logging.info("Base URL is '{}'.".format(base_url))
 
 # Fetch each page and save as AsciiDoc
-for page in args.pages:
-    url = "{}/{}?expand=body.storage".format(base_url, page)
-    resp = requests.get(url=url, auth=(CONFLUENCE_USERNAME, CONFLUENCE_PASSWORD))
-    if resp.status_code != 200:
-        logging.error("Status code {} for '{}'. Continuing.".format(resp.status_code, url))
-        continue
-    logging.info("Status code {} for '{}'.".format(resp.status_code, url))
-    data = resp.json()
-    html = data["body"]["storage"]["value"]
+try:
+    for page in args.pages:
+        url = "{}/{}?expand=body.storage".format(base_url, page)
+        resp = requests.get(url=url, auth=(CONFLUENCE_USERNAME, CONFLUENCE_PASSWORD))
+        if resp.status_code != 200:
+            logging.error("Status code {} for '{}'. Continuing.".format(resp.status_code, url))
+            continue
+        logging.info("Status code {} for '{}'.".format(resp.status_code, url))
+        data = resp.json()
+        title = data["title"]
+        html = data["body"]["storage"]["value"]
 
-    # Transform to AsciiDoc using Pandoc
-    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    comm = proc.communicate(input=html.encode())[0]
-    adoc = comm.decode().strip()
+        # Transform to AsciiDoc using Pandoc
+        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        comm = proc.communicate(input=html.encode())[0]
+        adoc = comm.decode().strip()
 
-    # Save to file
-    filename = "{}/{}.adoc".format(args.output, page)
-    file = open(filename, "w")
-    file.write(adoc)
-    file.close()
-    logging.info("Saved AsciiDoc file '{}'".format(filename))
+        # Save to file
+        filename = "{}/{}.adoc".format(args.output, page)
+        file = open(filename, "w")
+        file.write("= {}\n\n".format(title))
+        file.write(adoc)
+        file.close()
+        logging.info("Saved AsciiDoc file '{}'".format(filename))
+except:
+    e = sys.exc_info()[0]
+    logging.error("Error: '{}'. Exiting.".format(e))
+    exit(1)
