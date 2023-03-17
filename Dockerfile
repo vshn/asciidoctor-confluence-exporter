@@ -1,4 +1,4 @@
-FROM pandoc/core:2.14.0.1
+FROM pandoc/core:3.1.1.0
 
 RUN apk add python3
 RUN pip3 install --upgrade pip
