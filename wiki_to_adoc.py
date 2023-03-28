@@ -57,7 +57,7 @@ if not CONFLUENCE_USERNAME or not CONFLUENCE_PASSWORD:
 logging.info("Environment variables set.")
 
 # Pandoc command to transform HTML into AsciiDoc.
-cmd = ["/usr/bin/pandoc", "--from=html", "--to=asciidoctor", "--wrap=none"]
+cmd = ["/usr/local/bin/pandoc", "--from=html", "--to=asciidoctor", "--wrap=none"]
 base_url = slash_join(args.wiki, "rest", "api", "content")
 logging.info("Base URL is '{}'.".format(base_url))
 
