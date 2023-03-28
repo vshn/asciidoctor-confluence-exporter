@@ -14,15 +14,15 @@ This tool requires the username and password of a valid user to access the Confl
 * `CONFLUENCE_USERNAME`
 * `CONFLUENCE_PASSWORD`
 
-== Docker Image
+== Container Image
 
 The `Dockerfile` bundled is used to create the `vshn/asciidoctor-confluence-exporter` image, which can be used as follows:
 
-`docker run --rm --env-file credentials --user "$(id -u)" --volume "${PWD}":/data vshn/asciidoctor-confluence-exporter:1.0 --wiki=https://wiki.url --output=output 123 45 6789 --verbose`
+`podman run --rm --env-file credentials --volume "${PWD}":/data ghcr.io/vshn/asciidoctor-confluence-exporter:1.0 --wiki=https://wiki.url --output=output 123 45 6789 --verbose`
 
 In the command above, "123", "45" and "6789" are valid page IDs in the Confluence wiki located in "wiki.url". The `--help` parameter provides more information about the use of the tool.
 
-Also, in the example above, Docker passes the environment variables through a file simply named `credentials`, which might look like this:
+Also, in the example above, the container runtime passes the environment variables through a file simply named `credentials`, which might look like this:
 
 [source]
 ----
