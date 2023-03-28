@@ -10,6 +10,5 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
 COPY --chown=appuser wiki_to_adoc.py /home/appuser/wiki_to_adoc
-RUN mkdir /home/appuser/data
 WORKDIR /home/appuser/data
 ENTRYPOINT ["/home/appuser/wiki_to_adoc"]

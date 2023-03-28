@@ -17,8 +17,7 @@ def slash_join(*args):
     return "/".join(arg.strip("/") for arg in args)
 
 # Parsing command arguments
-parser = argparse.ArgumentParser(description="Reads a series of pages from a Confluence `--wiki` server as numeric IDs, and writes each one to an AsciiDoc file into the specified `--output` folder.")
-parser.add_argument("-o", "--output", help="folder where to export files", required=True)
+parser = argparse.ArgumentParser(description="Reads a series of pages from a Confluence `--wiki` server as numeric IDs, and writes each one to stdout.")
 parser.add_argument("-w", "--wiki", help="base URL of the Confluence wiki", required=True)
 parser.add_argument("-v", "--verbose", help="show all logging messages during execution", action="store_true")
 parser.add_argument("--version", action="version", version="%(prog)s 1.0")
@@ -33,18 +32,7 @@ logging.basicConfig(format='%(levelname)s: %(message)s', level=level)
 
 logging.info("Starting program with parameters:")
 logging.info("Wiki: '{}'".format(args.wiki))
-logging.info("Output: '{}'".format(args.output))
 logging.info("Page IDs: '{}'".format(args.pages))
-
-# Verify that the specified output argument is a folder
-if os.path.exists(args.output) and not os.path.isdir(args.output):
-    logging.error("Invalid output folder name '{}'. Exiting.".format(args.output))
-    exit(1)
-
-# If the folder does not exist, create it
-if not os.path.exists(args.output):
-    logging.info("Creating output folder '{}'".format(args.output))
-    os.makedirs(args.output)
 
 # Read username and password from the environment
 CONFLUENCE_USERNAME = os.environ.get("CONFLUENCE_USERNAME")
@@ -79,13 +67,9 @@ try:
         comm = proc.communicate(input=html.encode())[0]
         adoc = comm.decode().strip()
 
-        # Save to file
-        filename = "{}/{}.adoc".format(args.output, page)
-        file = open(filename, "w")
-        file.write("= {}\n\n".format(title))
-        file.write(adoc)
-        file.close()
-        logging.info("Saved AsciiDoc file '{}'".format(filename))
+        # Output to stdout
+        logging.info("Printing page '{}'".format(page))
+        print(adoc)
 except:
     e = sys.exc_info()[0]
     logging.error("Error: '{}'. Exiting.".format(e))
