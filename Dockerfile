@@ -1,4 +1,4 @@
-FROM docker.io/pandoc/core:3.1.1.0
+FROM docker.io/pandoc/core:3.5.0.0
 
 ENV PYTHONUNBUFFERED=1
 RUN apk add python3
